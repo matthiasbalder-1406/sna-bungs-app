@@ -255,7 +255,7 @@ function renderMetrics() {
       const nMinusOne = Math.max(nodeIds.length - 1, 1);
       closenessRawFractionMap.set(startId, { numerator: 1, denominator: closenessDistanceSum });
       closenessNormalizedFractionMap.set(startId, {
-        numerator: closenessReachable,
+        numerator: closenessReachable * closenessReachable,
         denominator: nMinusOne * closenessDistanceSum,
       });
     } else {
