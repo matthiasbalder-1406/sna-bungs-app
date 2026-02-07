@@ -143,6 +143,32 @@ function formatFraction(numerator, denominator) {
   return `${numerator}/${denominator}`;
 }
 
+function gcd(a, b) {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y !== 0) {
+    const temp = y;
+    y = x % y;
+    x = temp;
+  }
+  return x || 1;
+}
+
+function reduceFraction(numerator, denominator) {
+  if (denominator === 0) {
+    return { numerator: 0, denominator: 1 };
+  }
+  if (numerator === 0) {
+    return { numerator: 0, denominator: 1 };
+  }
+
+  const divisor = gcd(numerator, denominator);
+  return {
+    numerator: numerator / divisor,
+    denominator: denominator / divisor,
+  };
+}
+
 function computeBetweennessCentrality(nodeIds, adjacency) {
   const betweennessRaw = new Map(nodeIds.map((id) => [id, 0]));
 
@@ -254,10 +280,10 @@ function renderMetrics() {
     if (closenessDistanceSum > 0) {
       const nMinusOne = Math.max(nodeIds.length - 1, 1);
       closenessRawFractionMap.set(startId, { numerator: 1, denominator: closenessDistanceSum });
-      closenessNormalizedFractionMap.set(startId, {
-        numerator: closenessReachable * closenessReachable,
-        denominator: nMinusOne * closenessDistanceSum,
-      });
+      closenessNormalizedFractionMap.set(
+        startId,
+        reduceFraction(closenessReachable * closenessReachable, nMinusOne * closenessDistanceSum)
+      );
     } else {
       closenessRawFractionMap.set(startId, { numerator: 0, denominator: 1 });
       closenessNormalizedFractionMap.set(startId, { numerator: 0, denominator: 1 });
