@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kleines Netzwerk zeichnen</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>Kleines Netzwerk zeichnen</h1>
+      <section class="controls">
+        <label for="node-count">Anzahl Knoten:</label>
+        <input id="node-count" type="number" min="2" max="20" value="6" />
+
+        <label for="graph-type">Graph-Typ:</label>
+        <select id="graph-type">
+          <option value="undirected">Ungerichtet</option>
+          <option value="directed">Gerichtet</option>
+        </select>
+
+        <button id="create-network">Netzwerk erstellen</button>
+        <button id="clear-edges">Kanten löschen</button>
+      </section>
+      <p id="hint">Wähle eine Kante: erst Knoten A, dann Knoten B anklicken.</p>
+
+      <section class="workspace sidebar-open">
+        <section id="graph" aria-label="Netzwerk Zeichenfläche">
+          <svg id="edges" aria-hidden="true">
+            <defs>
+              <marker
+                id="arrowhead"
+                markerWidth="10"
+                markerHeight="7"
+                refX="8"
+                refY="3.5"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#4b5563"></polygon>
+              </marker>
+            </defs>
+          </svg>
+        </section>
+
+        <aside id="metrics-panel" aria-label="Netzwerk-Metriken">
+          <button id="toggle-metrics" type="button" aria-expanded="true">Metriken einklappen</button>
+          <div id="metrics-content">
+            <h2>Netzwerk-Metriken</h2>
+            <ul id="global-metrics"></ul>
+            <h3>Knoten-Metriken</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Knoten</th>
+                  <th>Degree</th>
+                  <th id="in-degree-header">In-Degree</th>
+                  <th id="out-degree-header">Out-Degree</th>
+                  <th>Local Clustering Coefficient</th>
+                  <th>Closeness Centrality</th>
+                  <th>Betweenness Centrality</th>
+                </tr>
+              </thead>
+              <tbody id="node-metrics-body"></tbody>
+            </table>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
