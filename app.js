@@ -136,6 +136,13 @@ function bfsDistances(startId, adjacency) {
   return distances;
 }
 
+function formatFraction(numerator, denominator) {
+  if (denominator === 0) {
+    return '0/1';
+  }
+  return `${numerator}/${denominator}`;
+}
+
 function computeBetweennessCentrality(nodeIds, adjacency) {
   const betweennessRaw = new Map(nodeIds.map((id) => [id, 0]));
 
@@ -214,8 +221,8 @@ function renderMetrics() {
   nodeMetricsBody.innerHTML = '';
 
   let clusteringSum = 0;
-  const closenessRawMap = new Map();
-  const closenessNormalizedMap = new Map();
+  const closenessRawFractionMap = new Map();
+  const closenessNormalizedFractionMap = new Map();
 
   let distanceSum = 0;
   let reachablePairCount = 0;
@@ -246,19 +253,22 @@ function renderMetrics() {
 
     if (closenessDistanceSum > 0) {
       const nMinusOne = Math.max(nodeIds.length - 1, 1);
-      const closenessRaw = closenessReachable / closenessDistanceSum;
-      const closenessNormalized = (closenessReachable / nMinusOne) * closenessRaw;
-      closenessRawMap.set(startId, closenessRaw);
-      closenessNormalizedMap.set(startId, closenessNormalized);
+      closenessRawFractionMap.set(startId, { numerator: 1, denominator: closenessDistanceSum });
+      closenessNormalizedFractionMap.set(startId, {
+        numerator: closenessReachable,
+        denominator: nMinusOne * closenessDistanceSum,
+      });
     } else {
-      closenessRawMap.set(startId, 0);
-      closenessNormalizedMap.set(startId, 0);
+      closenessRawFractionMap.set(startId, { numerator: 0, denominator: 1 });
+      closenessNormalizedFractionMap.set(startId, { numerator: 0, denominator: 1 });
     }
   });
 
   nodeIds.forEach((nodeId) => {
     const degree = undirectedNeighbors.get(nodeId).size;
     const localClustering = computeLocalClusteringCoefficient(nodeId, undirectedNeighbors);
+    const closenessRaw = closenessRawFractionMap.get(nodeId);
+    const closenessNormalized = closenessNormalizedFractionMap.get(nodeId);
     clusteringSum += localClustering;
 
     const row = document.createElement('tr');
@@ -268,8 +278,8 @@ function renderMetrics() {
       ${directed ? `<td>${inDegree.get(nodeId)}</td>` : ''}
       ${directed ? `<td>${outDegree.get(nodeId)}</td>` : ''}
       <td>${localClustering.toFixed(3)}</td>
-      <td>${closenessRawMap.get(nodeId).toFixed(3)}</td>
-      <td>${closenessNormalizedMap.get(nodeId).toFixed(3)}</td>
+      <td>${formatFraction(closenessRaw.numerator, closenessRaw.denominator)}</td>
+      <td>${formatFraction(closenessNormalized.numerator, closenessNormalized.denominator)}</td>
       <td>${betweennessRaw.get(nodeId).toFixed(3)}</td>
       <td>${betweennessNormalized.get(nodeId).toFixed(3)}</td>
     `;
